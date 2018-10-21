@@ -9,8 +9,6 @@
 #include <crypto/aes.h>
 using std::string;
 
-typedef unsigned char byte;
-
 string encrypt(string plaintext, string ekey, byte* eiv);
 string decrypt(string ciphertext, string ekey);
 
