@@ -20,20 +20,18 @@ static CryptoPP::AutoSeededRandomPool s_rand;
 std::string Cipher::encrypt(std::string plaintext)
 {
     std::string ciphertext, ivPlaintext;
-    std::unique_ptr<BufferedTransformation> streamTransFilter;
-    std::unique_ptr<StringSink> stringSink;
 
-    ivPlaintext = getIVPlaintext();
+    ivPlaintext = ivToPlaintext();
     ciphertext = ivplaintext;
 
     try {
         CBC_MODE<AES>::Encryption blockCipher;
         blockCipher.setKeyWithIv(d_key, d_key.size(), d_iv);
 
-        streamTransFilter = createStreamTransFilter(blockCipher);
-        stringSink = createStringSink(ciphertext);
-        
-        StringSource ss(plaintext, true, streamTransFilter, stringSink);
+        StringSource ss(plaintext, true,
+                        new StreamTransformationFilter(blockCipher,
+                        new StringSink(ciphertext)));
+
         return ciphertext;
     }
     catch(const CryptoPP::Exception& e) {
@@ -41,13 +39,29 @@ std::string Cipher::encrypt(std::string plaintext)
     }
 }
 
+std::string Cipher::ivToPlaintext(CryptoPP::SecByteBlock iv)
+{
+    if (iv.size() == 0 && d_iv.size() == 0) {
+        generateIV();
+    }
+    else if (iv.size() != 0) {
+        d_iv = iv;
+    }
+
+    return std::string(reinterpret_cast<const char*>(&d_iv[0]), d_iv.size());
+}
+
+SecByteBlock Cipher::generateIV()
+{
+    s_rand.GenerateBlock(d_iv);
+    return d_iv;
+}
+
 std::string Cipher::decrypt(std::string ciphertext)
 {
     std::string plaintext, ivPlaintext;
-    std::unique_ptr<BufferedTransformation> streamTransFilter;
-    std::unique_ptr<StringSink> stringSink;
 
-    ivPlaintext = ciphertext.substr(0, AES::BLOCKSIZE);
+    ivPlaintext =     setIV(ivPlaintext);
     setIV(ivPlaintext);
 
     ciphertext = ciphertext.substr(AES::BLOCKSIZE);
@@ -66,16 +80,15 @@ std::string Cipher::decrypt(std::string ciphertext)
     }
 }
 
+std::string Cipher::extractIV(std::string ciphertext)
+{
+    return ciphertext.substr(AES::BLOCKSIZE);
+}
+
 SecByteBlock Cipher::generateKey()
 {
     s_rand.GenerateBlock(d_key);
     return d_key;
-}
-
-SecByteBlock Cipher::generateIV()
-{
-    s_rand.GenerateBlock(d_iv);
-    return d_iv;
 }
 
 void Cipher::setKey(std::string key)
@@ -88,7 +101,3 @@ void Cipher::setIV(std::string iv)
     d_iv = SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&iv[0]), iv.size());
 }
 
-std::string Cipher::getIVPlaintext()
-{
-    return std::string(reinterpret_cast<const char*>(&d_iv[0]), d_iv.size());
-}
