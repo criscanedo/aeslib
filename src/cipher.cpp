@@ -14,10 +14,10 @@ std::string Cipher::decrypt(std::string ciphertext)
 
 void Cipher::setKey(std::string key)
 {
-    d_key(reinterpret_cast<const byte*>(&key[0]), key.size());
+    d_key = CryptoPP::SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&key[0]), key.size());
 }
 
 void Cipher::setIV(std::string iv)
 {
-    d_iv(reinterpret_cast<const byte*>(&iv[0]), iv.size());
+    d_iv = CryptoPP::SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&iv[0]), iv.size());
 }

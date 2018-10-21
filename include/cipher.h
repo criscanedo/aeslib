@@ -5,9 +5,9 @@
 #include <string>
 #include <crypto/secblock.h>
 
-class cipher {
+class Cipher {
 private:
-    typedef unsigned char byte;
+    //typedef unsigned char byte;
 
     CryptoPP::SecByteBlock d_key;
     CryptoPP::SecByteBlock d_iv;
