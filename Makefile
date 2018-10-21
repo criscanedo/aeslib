@@ -19,7 +19,7 @@ OBJS := $(patsubst $(srcdir)//%.cpp, $(objdir)//%.o, $(SRCS))
 exe: $(EXE)
 
 $(EXE): $(OBJS)
-	$(CC) -g -o $@ $^ -lcryptopp
+	$(CC) -g -o $@ $^ -lcryptopp -lpthread
 
 lib: $(LIB)
 
@@ -31,7 +31,7 @@ $(objdir)//%.o: $(srcdir)//%.cpp
 	$(CC) -g $(INCLUDE) $(CPPFLAGS) -o $@ $<
 
 
-# Run Tests
+# Build Tests
 
 tobjdir := $(testdir)//build
 TESTSRCS := $(wildcard $(testdir)//*.cpp)
@@ -39,7 +39,7 @@ TESTOBJS := $(patsubst $(testdir)//%.cpp, $(tobjdir)//%.o, $(TESTSRCS))
 TESTEXE := $(testdir)//alltests
 
 tests: $(TESTOBJS)
-	$(CC) $^ -l database -o $(TESTEXE)
+	$(CC) $^ -l cipher -o $(TESTEXE)
 
 $(tobjdir)//%.o: $(testdir)//%.cpp
 	$(CC) -I ..//$(incdir) $(CPPFLAGS) -o $@ $<
@@ -55,7 +55,7 @@ tclean:
 
 updateLibrary:
 	@echo Moving libdatabase.a to c++ search path...
-	cp -f lib/libdatabase.a /usr/lib/
+	cp -f lib/libcipher.a /usr/lib/
 	@echo \nDone.
 
 updateHeaders:
