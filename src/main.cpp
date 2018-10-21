@@ -23,22 +23,24 @@ int main()
 
     CryptoPP::AutoSeededRandomPool rnd;
 
-    SecByteBlock key(0x00, AES::DEFAULT_KEYLENGTH);
-    byte iv[AES::BLOCKSIZE];
+    CryptoPP::SecByteBlock key(0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    byte iv[CryptoPP::AES::BLOCKSIZE];
+
+    std::cout << "Size of iv array: " << sizeof(iv) << std::endl;
 
     rnd.GenerateBlock(key, key.size());
-    rnd.GenerateBlock(iv, iv.size());
+    rnd.GenerateBlock(iv, sizeof(iv));
 
-    string ciphertext = encrypt(plaintext, key, iv);
+    //string ciphertext = encrypt(plaintext, key, iv);
     //Encode here first
-    std::cout << "Encrypted text: " << ciphertext << std::endl;
+    //std::cout << "Encrypted text: " << ciphertext << std::endl;
 
-    string roundtrip = decrypt(ciphertext, key);
-    std::cout << "Decrypted text: " << roundtrip << std::endl;
+    //string roundtrip = decrypt(ciphertext, key);
+    //std::cout << "Decrypted text: " << roundtrip << std::endl;
 
     return 0;
 }
-
+/*
 string encrypt(string plaintext, string ekey, byte* eiv)
 {
     string ciphertext, ivplaintext;
@@ -65,16 +67,16 @@ string encrypt(string plaintext, string ekey, byte* eiv)
 string decrypt(string ciphertext, string ekey)
 {
     string plaintext, ivplaintext;
-    SecByteBlock key(reinterpret_cast<const byte*>(&ekey[0]), ekey.size());
 
     // Copy first 16 bytes from ciphertext
     ivplaintext = ciphertext.substr(0, AES::BLOCKSIZE);
-    SecByteBlock iv(reinterpret_cast<const byte*>(&ivplaintext[0]), ivplaintext.size());
 
     // Remove IV from ciphertext
     ciphertext = ciphertext.substr(AES::BLOCKSIZE);
 
     try {
+        SecByteBlock key(reinterpret_cast<const byte*>(&ekey[0]), ekey.size());
+        SecByteBlock iv(reinterpret_cast<const byte*>(&ivplaintext[0]), ivplaintext.size());
         CBC_MODE<AES>::Decryption blockCipher;
         blockCipher.setKeyWithIv(key, key.size(), iv);
 
@@ -85,4 +87,4 @@ string decrypt(string ciphertext, string ekey)
         std::cerr << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
-}
+} */
