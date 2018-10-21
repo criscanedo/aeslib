@@ -4,6 +4,7 @@
 
 std::string Cipher::encrypt(std::string plaintext)
 {
+    std::string ciphertext, ivPlaintext;
     return "";
 }
 
@@ -20,4 +21,9 @@ void Cipher::setKey(std::string key)
 void Cipher::setIV(std::string iv)
 {
     d_iv = CryptoPP::SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&iv[0]), iv.size());
+}
+
+std::string Cipher::getIVPlaintext()
+{
+    return std::string(reinterpret_cast<const char*>(&d_iv[0]), d_iv.size());
 }

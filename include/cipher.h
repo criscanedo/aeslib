@@ -19,6 +19,8 @@ public:
     // MANIPULATORS
     void setKey(std::string key);
     void setIV(std::string iv);
+
+    std::string getIVPlaintext();
 };
 
 #endif
