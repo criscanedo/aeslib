@@ -5,7 +5,6 @@
 #include <crypto/filters.h>
 #include <crypto/modes.h>
 #include <crypto/secblock.h>
-#include <memory>
 #include "cipher.h"
 
 using CryptoPP::AES;
@@ -13,6 +12,7 @@ using CryptoPP::BufferedTransformation;
 using CryptoPP::CBC_MODE;
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
+using CryptoPP::StreamTransformationFilter;
 using CryptoPP::SecByteBlock;
 
 static CryptoPP::AutoSeededRandomPool s_rand;
@@ -31,7 +31,6 @@ std::string Cipher::encrypt(std::string plaintext)
         StringSource ss(plaintext, true,
                         new StreamTransformationFilter(blockCipher,
                         new StringSink(ciphertext)));
-
         return ciphertext;
     }
     catch(const CryptoPP::Exception& e) {
@@ -61,7 +60,7 @@ std::string Cipher::decrypt(std::string ciphertext)
 {
     std::string plaintext, ivPlaintext;
 
-    ivPlaintext =     setIV(ivPlaintext);
+    ivPlaintext = extractIV(ciphertext);
     setIV(ivPlaintext);
 
     ciphertext = ciphertext.substr(AES::BLOCKSIZE);
@@ -70,10 +69,10 @@ std::string Cipher::decrypt(std::string ciphertext)
         CBC_MODE<AES>::Decryption blockCipher;
         blockCipher.setKeyWithIv(d_key, d_key.size(), d_iv);
 
-        stringSink = createStringSink(plaintext);
-        streamTransFilter = createStreamTransFilter(blockCipher);
-
-        StringSource ss(ciphertext, 
+        StringSource ss(ciphertext, true,
+                        new StreamTransformationFilter(blockCipher,
+                        new StringSink(plaintext)));
+        return plaintext;
     }
     catch(const CryptoPP::Exception& e) {
         throw e;
@@ -101,3 +100,12 @@ void Cipher::setIV(std::string iv)
     d_iv = SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&iv[0]), iv.size());
 }
 
+std::string Cipher::encode64(std::string text)
+{
+    return "";
+}
+
+std::string Cipher::decode64(std::string text)
+{
+    return "";
+}

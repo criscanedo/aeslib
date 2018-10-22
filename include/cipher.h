@@ -2,8 +2,8 @@
 #ifndef INCLUDED_CIPHER
 #define INCLUDED_CIPHER
 
-#include <memory>
 #include <string>
+#include <crypto/osrng.h>
 #include <crypto/secblock.h>
 #include <crypto/cryptlib.h>
 #include <crypto/filters.h>
@@ -27,6 +27,9 @@ public:
 
     static std::string ivToPlaintext(CryptoPP::SecByteBlock iv);
     static std::string extractIV(std::string ciphertext);
+
+    static std::string encode64(std::string text);
+    static std::string decode64(std::string text);
 };
 
 #endif
