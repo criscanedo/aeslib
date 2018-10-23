@@ -15,13 +15,19 @@ using CryptoPP::StringSource;
 using CryptoPP::StreamTransformationFilter;
 using CryptoPP::SecByteBlock;
 
-static CryptoPP::AutoSeededRandomPool s_rand;
+static int Cipher::_ivSize = 0x10;
+static CryptoPP::AutoSeededRandomPool Cipher::s_rand;
+static bool Cipher::s_isKeySet = false;
 
 std::string Cipher::encrypt(std::string plaintext)
 {
+    if (!s_isKeySet) {
+        throw std::runtime_error("Key has not been set.");
+    }
+
     std::string ciphertext, ivPlaintext;
 
-    ivPlaintext = ivToPlaintext();
+    ivPlaintext = ivToPlaintext(d_iv);
     ciphertext = ivplaintext;
 
     try {
@@ -38,16 +44,13 @@ std::string Cipher::encrypt(std::string plaintext)
     }
 }
 
-std::string Cipher::ivToPlaintext(CryptoPP::SecByteBlock iv)
+std::string Cipher::ivtp(CryptoPP::SecByteBlock iv)
 {
-    if (iv.size() == 0 && d_iv.size() == 0) {
-        generateIV();
-    }
-    else if (iv.size() != 0) {
-        d_iv = iv;
+    if (iv.size() < _ivSize) {
+        throw std::runtime_error("iv: Not a valid IV size for AES.");
     }
 
-    return std::string(reinterpret_cast<const char*>(&d_iv[0]), d_iv.size());
+    return std::string(reinterpret_cast<const char*>(&iv[0]), iv.size());
 }
 
 SecByteBlock Cipher::generateIV()
@@ -58,6 +61,8 @@ SecByteBlock Cipher::generateIV()
 
 std::string Cipher::decrypt(std::string ciphertext)
 {
+    if (!s_isKeySet) generateKey();
+
     std::string plaintext, ivPlaintext;
 
     ivPlaintext = extractIV(ciphertext);
@@ -87,12 +92,18 @@ std::string Cipher::extractIV(std::string ciphertext)
 SecByteBlock Cipher::generateKey()
 {
     s_rand.GenerateBlock(d_key);
+    s_isKeySet = true;
     return d_key;
 }
 
-void Cipher::setKey(std::string key)
+bool Cipher::setKey(std::string key)
 {
-    d_key = SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&key[0]), key.size());
+    if (!s_isKeySet) {
+        d_key = SecByteBlock(reinterpret_cast<const CryptoPP::byte*>(&key[0]), key.size());
+        s_isKeySet = true;
+        return true;
+    }
+    return false;
 }
 
 void Cipher::setIV(std::string iv)

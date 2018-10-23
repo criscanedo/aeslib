@@ -10,17 +10,19 @@
 
 struct Cipher {
 private:
+    static int _ivSize;
     CryptoPP::SecByteBlock d_key;
     CryptoPP::SecByteBlock d_iv;
 
     static CryptoPP::AutoSeededRandomPool s_rand;
+    static bool s_isKeySet;
 
 public:
     static std::string encrypt(std::string plaintext);
     static std::string decrypt(std::string ciphertext);
 
     // MANIPULATORS
-    static void setKey(std::string key);
+    static bool setKey(std::string key);
     static void setIV(std::string iv);
     static CryptoPP::SecByteBlock generateKey();
     static CryptoPP::SecByteBlock generateIV();
