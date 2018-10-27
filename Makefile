@@ -36,10 +36,10 @@ $(objdir)//%.o: $(srcdir)//%.cpp
 tobjdir := $(testdir)//build
 TESTSRCS := $(wildcard $(testdir)//*.cpp)
 TESTOBJS := $(patsubst $(testdir)//%.cpp, $(tobjdir)//%.o, $(TESTSRCS))
-TESTEXE := $(testdir)//alltests
+TESTEXE := $(testdir)//runner
 
 tests: $(TESTOBJS)
-	$(CC) $^ -l cipher -o $(TESTEXE)
+	$(CC) $^ -laescrypto -lcryptopp -o $(TESTEXE)
 
 $(tobjdir)//%.o: $(testdir)//%.cpp
 	$(CC) -I ..//$(incdir) $(CPPFLAGS) -o $@ $<
@@ -54,8 +54,8 @@ tclean:
 	rm -rf $(tobjdir)//*.o
 
 updateLibrary:
-	@echo Moving libdatabase.a to c++ search path...
-	cp -f lib/libcipher.a /usr/lib/
+	@echo Moving libaescrypto.a to c++ search path...
+	cp -f lib/libaescrypto.a /usr/lib/
 	@echo \nDone.
 
 updateHeaders:

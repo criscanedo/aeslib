@@ -136,6 +136,16 @@ SecByteBlock AESCrypto::getIv() const
     return d_iv;
 }
 
+int AESCrypto::getBlockSize() const
+{
+    return AES::BLOCKSIZE;
+}
+
+int AESCrypto::getKeySize() const
+{
+    return d_keySize;
+}
+
 bool AESCrypto::isValidKeySize(int size)
 {
     int aesSize = AES::MIN_KEYLENGTH;
