@@ -11,8 +11,8 @@ incdir := include
 testdir := tests
 libdir := lib
 
-EXE := $(bindir)//cipher.exe
-LIB := $(libdir)//libcipher.a
+EXE := $(bindir)//aescrypto.exe
+LIB := $(libdir)//libaescrypto.a
 SRCS := $(wildcard $(srcdir)//*.cpp)
 OBJS := $(patsubst $(srcdir)//%.cpp, $(objdir)//%.o, $(SRCS))
 
