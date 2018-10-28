@@ -3,7 +3,7 @@
 #include <crypto/aes.h>
 #include "aescrypto.h"
 
-SCENARIO("creating crypto has default key and block size", "[createAes]")
+SCENARIO("creating AESCrypto type has default key and block size", "[createAes]")
 {
     AESCrypto crypto;
 
@@ -11,7 +11,7 @@ SCENARIO("creating crypto has default key and block size", "[createAes]")
     REQUIRE(crypto.getBlockSize() == CryptoPP::AES::BLOCKSIZE);
 }
 
-SCENARIO("creating crypto has key and iv initialized to default size and 0", "[createAes]")
+SCENARIO("creating AESCrypto type has key and iv initialized to default size and 0", "[createAes]")
 {
     // Arrange
     CryptoPP::SecByteBlock mockIv(CryptoPP::AES::BLOCKSIZE);
