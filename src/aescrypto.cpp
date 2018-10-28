@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <crypto/cryptlib.h>
 #include <crypto/osrng.h>
