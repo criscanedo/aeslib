@@ -11,7 +11,7 @@ SCENARIO("creating AESCrypto type has default key and block size", "[createAes]"
     REQUIRE(crypto.getBlockSize() == CryptoPP::AES::BLOCKSIZE);
 }
 
-SCENARIO("creating AESCrypto type has key and iv initialized to default size and 0", "[createAes]")
+SCENARIO("creating AESCrypto type has key and iv initialized to default size and memset to 0", "[createAes]")
 {
     // Arrange
     CryptoPP::SecByteBlock mockIv(CryptoPP::AES::BLOCKSIZE);
@@ -31,6 +31,7 @@ SCENARIO("creating AESCrypto type has key and iv initialized to default size and
 
 SCENARIO("setting keys and iv", "[key][iv]")
 {
+    // Arrange
     AESCrypto crypto;
     CryptoPP::SecByteBlock mockIv(CryptoPP::AES::BLOCKSIZE);
     CryptoPP::SecByteBlock mockKey(CryptoPP::AES::DEFAULT_KEYLENGTH);
@@ -39,76 +40,82 @@ SCENARIO("setting keys and iv", "[key][iv]")
     {
         int invalidSize = 10;
 
-        // Resize key and iv to an invalid size of 10 bytes
+        // Act: Resize key and iv to an invalid size of 10 bytes
         mockIv.CleanNew(invalidSize);
         mockKey.CleanNew(invalidSize);
 
+        // Assert
         REQUIRE_THROWS(crypto.setKey(mockKey));
         REQUIRE_THROWS(crypto.setIv(mockIv));
     }
 
     GIVEN("key or iv of valid size, no exception is thrown")
     {
-        // Resize key to 16 bytes
+        // Assert: Set default 16 byte key and 16 byte iv
         REQUIRE_NOTHROW(crypto.setIv(mockIv));
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
 
-        // Resize key to 24 bytes
+        // Act and Assert: Resize key to 24 bytes
         mockKey.CleanNew(mockKey.size() + 8);
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
 
-        // Resize key to 32 bytes
+        // Act and Assert: Resize key to 32 bytes
         mockKey.CleanNew(mockKey.size() + 8);
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
     }
 
     GIVEN("valid key or iv, it is properly set")
     {
-        // Get and set default key and iv
+        // Act
         crypto.setIv(mockIv);
         crypto.setKey(mockKey);
         auto actualIv = crypto.getIv();
         auto actualKey = crypto.getKey();
 
+        // Assert
         REQUIRE(mockIv == actualIv);
         REQUIRE(mockKey == actualKey);
 
         WHEN("key of greater size is set")
         {
-            // Increase size of key by 8 bytes and set
+            // Act: Increase size of key by 8 bytes and set
             mockKey.CleanNew(mockKey.size() + 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
+            // Assert
             REQUIRE(mockKey == actualKey);
 
-            // Increase size of key to max by another 8 bytes and set
+            // Act: Increase size of key to max by another 8 bytes and set
             mockKey.CleanNew(mockKey.size() + 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
+            // Assert
             REQUIRE(mockKey == actualKey);
         }
 
         WHEN("key of lesser size is set")
         {
-            // Resize key to 32 bytes and set
+            // Arrange: Resize key to 32 bytes and set
             mockKey.CleanNew(CryptoPP::AES::MAX_KEYLENGTH);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
-            // Resize key to 24 bytes and set
+            // Act: Resize key to 24 bytes and set
             mockKey.CleanNew(mockKey.size() - 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
+            // Assert
             REQUIRE(mockKey == actualKey);
 
-            // Resize key to 16 bytes and set
+            // Act: Resize key to 16 bytes and set
             mockKey.CleanNew(mockKey.size() - 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
+            // Assert
             REQUIRE(mockKey == actualKey);
         }
     }
