@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <crypto/cryptlib.h>
 #include <crypto/osrng.h>
@@ -20,8 +21,7 @@ CryptoPP::AutoSeededRandomPool AESCrypto::s_rand;
 
 AESCrypto::AESCrypto()
 {
-    d_keySize = AES::DEFAULT_KEYLENGTH;
-    d_key = SecByteBlock(d_keySize);
+    d_key = SecByteBlock(AES::DEFAULT_KEYLENGTH);
     d_iv = SecByteBlock(AES::BLOCKSIZE);
     std::memset(d_key, 0x00, d_key.size());
     std::memset(d_iv, 0x00, d_iv.size());
@@ -90,10 +90,10 @@ SecByteBlock AESCrypto::toByteBlock(std::string str) const
 
 void AESCrypto::setKey(CryptoPP::SecByteBlock key)
 {
-    if (key.size() != d_keySize)
+    if (!isValidKeySize(key.size()))
         throw std::runtime_error("key: Not a valid size.");
 
-    d_key.New(d_keySize);
+    d_key.New(key.size());
     d_key = key;
 }
 
@@ -106,24 +106,16 @@ void AESCrypto::setIv(CryptoPP::SecByteBlock iv)
     d_iv = iv;
 }
 
-void AESCrypto::setKeySize(int sizeInBytes)
-{
-    if (isValidKeySize(sizeInBytes)) {
-        d_keySize = sizeInBytes;
-        d_key.CleanGrow(d_keySize);
-    }
-}
-
 void AESCrypto::generateKey()
 {
-    d_key.New(d_keySize);
-    s_rand.GenerateBlock(d_key, d_keySize);
+    d_key.New(AES::DEFAULT_KEYLENGTH);
+    s_rand.GenerateBlock(d_key, d_key.size());
 }
 
 void AESCrypto::generateIv()
 {
     d_iv.New(AES::BLOCKSIZE);
-    s_rand.GenerateBlock(d_iv, AES::BLOCKSIZE);
+    s_rand.GenerateBlock(d_iv, d_iv.size());
 }
 
 SecByteBlock AESCrypto::getKey() const
@@ -143,7 +135,7 @@ int AESCrypto::getBlockSize() const
 
 int AESCrypto::getKeySize() const
 {
-    return d_keySize;
+    return d_key.size();
 }
 
 bool AESCrypto::isValidKeySize(int size)

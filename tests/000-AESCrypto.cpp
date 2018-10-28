@@ -1,3 +1,4 @@
+#include <iostream>
 #include <catch.hpp>
 #include <crypto/secblock.h>
 #include "aescrypto.h"
@@ -37,7 +38,7 @@ TEST_CASE_METHOD(AESCryptoFixture, "create AESCrypto with key and iv initalized 
 TEST_CASE_METHOD(AESCryptoFixture, "set key and iv", "[key][iv]")
 {
     // valid key sizes in bytes: 16, 24, 32
-    // valid iv sizes in bytes: 16
+    // valid iv size in bytes: 16
 
     GIVEN("key or iv of invalid size, exception is thrown")
     {
@@ -46,17 +47,22 @@ TEST_CASE_METHOD(AESCryptoFixture, "set key and iv", "[key][iv]")
         CryptoPP::SecByteBlock invalidAesKey(notValid);
         CryptoPP::SecByteBlock invalidAesIv(alsoNotValid);
 
-        REQUIRE_THROW(aescrypto.setKey(invalidAesKey));
-        REQUIRE_THROW(aescrypto.setIv(invalidAesIv));
+        REQUIRE_THROWS(aescrypto.setKey(invalidAesKey));
+        REQUIRE_THROWS(aescrypto.setIv(invalidAesIv));
     }
 
     GIVEN("key or iv of valid size, no exception is thrown")
     {
-        int maxValidSize = defaultKeySize << 1;
         CryptoPP::SecByteBlock validAesKey(defaultKeySize);
         CryptoPP::SecByteBlock validAesIv(defaultBlockSize);
 
-        for(int i = defaultKeySize; i < maxValidSize; i+=8) {
-        }
+        REQUIRE_NOTHROW(aescrypto.setIv(validAesIv));
+        REQUIRE_NOTHROW(aescrypto.setKey(validAesKey));
+
+        validAesKey.CleanNew(validAesKey.SizeInBytes() + 8);
+        REQUIRE_NOTHROW(aescrypto.setKey(validAesKey));
+
+        validAesKey.CleanNew(validAesKey.SizeInBytes() + 8);
+        REQUIRE_NOTHROW(aescrypto.setKey(validAesKey));
     }
 }

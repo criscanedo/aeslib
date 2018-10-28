@@ -10,7 +10,6 @@
 
 class AESCrypto {
 private:
-    int d_keySize;
     CryptoPP::SecByteBlock d_key;
     CryptoPP::SecByteBlock d_iv;
     static CryptoPP::AutoSeededRandomPool s_rand;
