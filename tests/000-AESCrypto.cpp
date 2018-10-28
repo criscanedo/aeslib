@@ -39,6 +39,7 @@ SCENARIO("setting keys and iv", "[key][iv]")
     {
         int invalidSize = 10;
 
+        // Resize key and iv to an invalid size of 10 bytes
         mockIv.CleanNew(invalidSize);
         mockKey.CleanNew(invalidSize);
 
@@ -48,18 +49,22 @@ SCENARIO("setting keys and iv", "[key][iv]")
 
     GIVEN("key or iv of valid size, no exception is thrown")
     {
+        // Resize key to 16 bytes
         REQUIRE_NOTHROW(crypto.setIv(mockIv));
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
 
+        // Resize key to 24 bytes
         mockKey.CleanNew(mockKey.size() + 8);
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
 
+        // Resize key to 32 bytes
         mockKey.CleanNew(mockKey.size() + 8);
         REQUIRE_NOTHROW(crypto.setKey(mockKey));
     }
 
     GIVEN("valid key or iv, it is properly set")
     {
+        // Get and set default key and iv
         crypto.setIv(mockIv);
         crypto.setKey(mockKey);
         auto actualIv = crypto.getIv();
@@ -70,14 +75,14 @@ SCENARIO("setting keys and iv", "[key][iv]")
 
         WHEN("key of greater size is set")
         {
-            // Act: increase size of key by 8 bytes and set
+            // Increase size of key by 8 bytes and set
             mockKey.CleanNew(mockKey.size() + 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
             REQUIRE(mockKey == actualKey);
 
-            // Act: increase sie of key to max by another 8 bytes and set
+            // Increase size of key to max by another 8 bytes and set
             mockKey.CleanNew(mockKey.size() + 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
@@ -87,19 +92,19 @@ SCENARIO("setting keys and iv", "[key][iv]")
 
         WHEN("key of lesser size is set")
         {
-            // Resize key to max length and set first
+            // Resize key to 32 bytes and set
             mockKey.CleanNew(CryptoPP::AES::MAX_KEYLENGTH);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
-            // Act: resize key by shrinking 8 bytes and set
+            // Resize key to 24 bytes and set
             mockKey.CleanNew(mockKey.size() - 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
 
             REQUIRE(mockKey == actualKey);
 
-            // Act: resize key to minimum by 8 bytes and set
+            // Resize key to 16 bytes and set
             mockKey.CleanNew(mockKey.size() - 8);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
