@@ -93,7 +93,7 @@ void AESCrypto::setKey(CryptoPP::SecByteBlock key)
     if (!isValidKeySize(key.size()))
         throw std::runtime_error("key: Not a valid size.");
 
-    d_key.New(key.size());
+    d_key.CleanNew(key.size());
     d_key = key;
 }
 
@@ -102,7 +102,7 @@ void AESCrypto::setIv(CryptoPP::SecByteBlock iv)
     if (iv.size() != AES::BLOCKSIZE)
         throw std::runtime_error("iv: Not a valid size.");
 
-    d_iv.New(AES::BLOCKSIZE);
+    d_iv.CleanNew(AES::BLOCKSIZE);
     d_iv = iv;
 }
 
