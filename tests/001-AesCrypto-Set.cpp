@@ -96,23 +96,41 @@ SCENARIO("generating a random key or iv sets them to the instance of AesCrypto",
 {
     AesCrypto aes;
 
-    // 24 byte key and 16 byte iv
     SecByteBlock myKey = aes.toByteBlock("My distinguishable key!!");
     SecByteBlock myIv = aes.toByteBlock("My unique iv!!!!");
     aes.setKey(myKey);
     aes.setIv(myIv);
 
-    // Make sure our unique key and iv are set
-    CHECK(aes.getKey() == myKey);
-    CHECK(aes.getIv() == myIv);
+    GIVEN("a key and iv already set")
+    {
+        // Make sure our unique key and iv are set
+        CHECK(aes.getKey() == myKey);
+        CHECK(aes.getIv() == myIv);
 
-    // Randomly generating key and iv should overwrite what is set
-    aes.generateKey();
-    aes.generateIv();
+        aes.generateKey();
+        aes.generateIv();
 
-    SecByteBlock currentKey = aes.getKey();
-    SecByteBlock currentIv = aes.getIv();
+        SecByteBlock currentKey = aes.getKey();
+        SecByteBlock currentIv = aes.getIv();
 
-    REQUIRE_FALSE(myKey == currentKey);
-    REQUIRE_FALSE(myIv == currentIv);
+        REQUIRE_FALSE(myKey == currentKey);
+        REQUIRE_FALSE(myIv == currentIv);
+
+    }
+
+    AND_WHEN("generating a key or iv or more than once, a different value is produced and set")
+    {
+        aes.generateKey();
+        aes.generateIv();
+        SecByteBlock previousKey = aes.getKey();
+        SecByteBlock previousIv = aes.getIv();
+
+        aes.generateKey();
+        aes.generateIv();
+        SecByteBlock currentKey = aes.getKey();
+        SecByteBlock currentIv = aes.getIv();
+
+        REQUIRE_FALSE(previousKey == currentKey);
+        REQUIRE_FALSE(previousIv == currentIv);
+    }
 }
