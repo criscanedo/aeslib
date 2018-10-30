@@ -42,6 +42,8 @@ To create a SecByteBlock using AesCrypto:
     {
         // create a 128-bit sized SecByteBlock
         SecByteBlock key(AesCrypto::DEFAULT_KEYLENGTH);
+
+        return 0;
     }
 
 The key sizes and block size are accessible through the following static members:
@@ -62,6 +64,8 @@ You may also randomly generate a key and iv using AesCrypto:
         // Randomly generates and sets both key and IV
         aes.generateKey();
         aes.generateIv();
+
+        return 0;
     }
 
 ### CBC Encryption/Decryption
