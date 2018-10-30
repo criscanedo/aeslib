@@ -1,6 +1,11 @@
 # AesEncryption
 Personal library to perform AES CBC encryption/decryption with prepended IV. Acts as a wrapper around [Crypto++](https://www.cryptopp.com/) library.
 
+[AES](https://gitlab.com/hackerexecute/aescrypto#advanced-encryption-standard)
+[AesCrypto Implementation](https://gitlab.com/hackerexecute/aescrypto#aescrypto-implementation)
+[Usage](https://gitlab.com/hackerexecute/aescrypto#usage)
+[Install](https://gitlab.com/hackerexecute/aescrypto#install)
+
 ## Advanced Encryption Standard
 
 ### Description
@@ -11,14 +16,14 @@ Personal library to perform AES CBC encryption/decryption with prepended IV. Act
 * 12 rounds: 192-bit key
 * 14 rounds: 256-bit key
 
-## Block Cipher Mode of Operation
+### Block Cipher Mode of Operation
 [Cipher Block Chaining (CBC)](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)) is the mode of operation that is being used in this library. While it is generally recommended to include a hash-based message authentication code (HMAC) with CBC, I've written this library to begin with a practical minimum and work my way up to include authenticated symmetric-key encryption soon.
 
 CBC uses an [initialization vector (IV)](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Initialization_vector_(IV)) that is the size of AES's block size (128-bit). The IV is used to ensure unique ciphertext with every encryption. Without it, two plaintext messages would produce the same ciphertext output. It is highly recommend that a IV be generated randomly for each encryption, and to never use the same IV more than once under the same key.
 
 The algorithm itself XORs each block of plaintext with the previous block of ciphertext before being encrypted. The IV is used with the the first block of plaintext.
 
-## Padding
+### Padding
 
 Some libraries generally require specifying a [padding algorithm](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Padding) such as Java's [Cipher class](https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html) or .NET's [Aes class](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=netframework-4.7.2).
 
@@ -86,7 +91,7 @@ Currently there are two member functions to help with conversion from string to 
     std::string blockToString(SecByteBlock byteBlock) const;
     SecByteBlock toByteBlock(std::string str) const;
 
-### Usage
+## Usage
 
     #include <string>
     #include "aescrypto.h"
@@ -107,3 +112,7 @@ Currently there are two member functions to help with conversion from string to 
 
         return 0;
     }
+
+## Install
+
+
