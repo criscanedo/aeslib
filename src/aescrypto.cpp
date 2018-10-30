@@ -10,25 +10,27 @@
 using CryptoPP::byte;
 using CryptoPP::AES;
 using CryptoPP::CBC_Mode;
-using CryptoPP::BufferedTransformation;
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
 using CryptoPP::StreamTransformationFilter;
-using CryptoPP::SecByteBlock;
 
-CryptoPP::AutoSeededRandomPool AESCrypto::s_rand;
+CryptoPP::AutoSeededRandomPool AesCrypto::s_rand;
+const int AesCrypto::DEFAULT_KEYLENGTH = CryptoPP::AES::DEFAULT_KEYLENGTH;
+const int AesCrypto::MIN_KEYLENGTH = CryptoPP::AES::MIN_KEYLENGTH;
+const int AesCrypto::MAX_KEYLENGTH = CryptoPP::AES::MAX_KEYLENGTH;
+const int AesCrypto::BLOCKSIZE = CryptoPP::AES::BLOCKSIZE;
 
-AESCrypto::AESCrypto()
+AesCrypto::AesCrypto()
 {
-    d_key = SecByteBlock(AES::DEFAULT_KEYLENGTH);
-    d_iv = SecByteBlock(AES::BLOCKSIZE);
+    d_key = SecByteBlock(DEFAULT_KEYLENGTH);
+    d_iv = SecByteBlock(BLOCKSIZE);
     std::memset(d_key, 0x00, d_key.size());
     std::memset(d_iv, 0x00, d_iv.size());
 }
 
-std::string AESCrypto::cbcEncrypt(std::string plaintext) const
+std::string AesCrypto::cbcEncrypt(std::string plaintext) const
 {
-    std::string iv = ivToString(d_iv);
+    std::string iv = blockToString(d_iv);
     std::string ciphertext;
 
     try {
@@ -46,20 +48,11 @@ std::string AESCrypto::cbcEncrypt(std::string plaintext) const
     }
 }
 
-std::string AESCrypto::ivToString(CryptoPP::SecByteBlock iv) const
-{
-    if (iv.size() < AES::BLOCKSIZE) {
-        throw std::runtime_error("iv: Not a valid size.");
-    }
-
-    return std::string(reinterpret_cast<const char*>(&iv[0]), iv.size());
-}
-
-std::string AESCrypto::cbcDecrypt(std::string ciphertext) const
+std::string AesCrypto::cbcDecrypt(std::string ciphertext) const
 {
     std::string ivString = extractIv(ciphertext);
     SecByteBlock iv = toByteBlock(ivString);
-    ciphertext = ciphertext.substr(AES::BLOCKSIZE);
+    ciphertext = ciphertext.substr(BLOCKSIZE);
     std::string plaintext;
 
     try {
@@ -77,17 +70,22 @@ std::string AESCrypto::cbcDecrypt(std::string ciphertext) const
     }
 }
 
-std::string AESCrypto::extractIv(std::string ciphertext) const
+std::string AesCrypto::extractIv(std::string ciphertext) const
 {
-    return ciphertext.substr(0, AES::BLOCKSIZE);
+    return ciphertext.substr(0, BLOCKSIZE);
 }
 
-SecByteBlock AESCrypto::toByteBlock(std::string str) const
+std::string AesCrypto::blockToString(SecByteBlock byteBlock) const
+{
+    return std::string(reinterpret_cast<const char*>(&byteBlock[0], byteBlock.size()));
+}
+
+SecByteBlock AesCrypto::toByteBlock(std::string str) const
 {
     return SecByteBlock(reinterpret_cast<const byte*>(&str[0]), str.size());
 }
 
-void AESCrypto::setKey(CryptoPP::SecByteBlock key)
+void AesCrypto::setKey(CryptoPP::SecByteBlock key)
 {
     if (!isValidKeySize(key.size()))
         throw std::runtime_error("key: Not a valid size.");
@@ -96,50 +94,40 @@ void AESCrypto::setKey(CryptoPP::SecByteBlock key)
     d_key = key;
 }
 
-void AESCrypto::setIv(CryptoPP::SecByteBlock iv)
+void AesCrypto::setIv(CryptoPP::SecByteBlock iv)
 {
-    if (iv.size() != AES::BLOCKSIZE)
+    if (iv.size() != BLOCKSIZE)
         throw std::runtime_error("iv: Not a valid size.");
 
-    d_iv.CleanNew(AES::BLOCKSIZE);
+    d_iv.CleanNew(BLOCKSIZE);
     d_iv = iv;
 }
 
-void AESCrypto::generateKey()
+void AesCrypto::generateKey()
 {
-    d_key.New(AES::DEFAULT_KEYLENGTH);
+    d_key.New(DEFAULT_KEYLENGTH);
     s_rand.GenerateBlock(d_key, d_key.size());
 }
 
-void AESCrypto::generateIv()
+void AesCrypto::generateIv()
 {
-    d_iv.New(AES::BLOCKSIZE);
+    d_iv.New(BLOCKSIZE);
     s_rand.GenerateBlock(d_iv, d_iv.size());
 }
 
-SecByteBlock AESCrypto::getKey() const
+SecByteBlock AesCrypto::getKey() const
 {
     return d_key;
 }
 
-SecByteBlock AESCrypto::getIv() const
+SecByteBlock AesCrypto::getIv() const
 {
     return d_iv;
 }
 
-int AESCrypto::getBlockSize() const
+bool AesCrypto::isValidKeySize(int size)
 {
-    return AES::BLOCKSIZE;
-}
-
-int AESCrypto::getKeySize() const
-{
-    return d_key.size();
-}
-
-bool AESCrypto::isValidKeySize(int size)
-{
-    int aesSize = AES::MIN_KEYLENGTH;
+    int aesSize = MIN_KEYLENGTH;
 
     return ((aesSize == size) ||
            ((aesSize + 8) == size) ||

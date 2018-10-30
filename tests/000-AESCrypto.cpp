@@ -1,26 +1,16 @@
 #include <catch.hpp>
-#include <crypto/secblock.h>
-#include <crypto/aes.h>
 #include "aescrypto.h"
 
-SCENARIO("creating AESCrypto type has default key and block size", "[createAes]")
-{
-    AESCrypto crypto;
-
-    REQUIRE(crypto.getKeySize() == CryptoPP::AES::DEFAULT_KEYLENGTH);
-    REQUIRE(crypto.getBlockSize() == CryptoPP::AES::BLOCKSIZE);
-}
-
-SCENARIO("creating AESCrypto type has key and iv initialized to default size and memset to 0", "[createAes]")
+SCENARIO("creating AesCrypto type has key and iv initialized to default size and memset to 0", "[createAes]")
 {
     // Arrange
-    CryptoPP::SecByteBlock mockIv(CryptoPP::AES::BLOCKSIZE);
-    CryptoPP::SecByteBlock mockKey(CryptoPP::AES::DEFAULT_KEYLENGTH);
+    SecByteBlock mockIv(AesCrypto::BLOCKSIZE);
+    SecByteBlock mockKey(AesCrypto::DEFAULT_KEYLENGTH);
     std::memset(mockIv, 0x00, mockIv.size());
     std::memset(mockKey, 0x00, mockKey.size());
 
     // Act
-    AESCrypto crypto;
+    AesCrypto crypto;
     auto actualIv = crypto.getIv();
     auto actualKey = crypto.getKey();
 
@@ -32,9 +22,9 @@ SCENARIO("creating AESCrypto type has key and iv initialized to default size and
 SCENARIO("setting keys and iv", "[key][iv]")
 {
     // Arrange
-    AESCrypto crypto;
-    CryptoPP::SecByteBlock mockIv(CryptoPP::AES::BLOCKSIZE);
-    CryptoPP::SecByteBlock mockKey(CryptoPP::AES::DEFAULT_KEYLENGTH);
+    AesCrypto crypto;
+    SecByteBlock mockIv(AesCrypto::BLOCKSIZE);
+    SecByteBlock mockKey(AesCrypto::DEFAULT_KEYLENGTH);
 
     GIVEN("key or iv of invalid size, exception is thrown")
     {
@@ -98,9 +88,12 @@ SCENARIO("setting keys and iv", "[key][iv]")
         WHEN("key of lesser size is set")
         {
             // Arrange: Resize key to 32 bytes and set
-            mockKey.CleanNew(CryptoPP::AES::MAX_KEYLENGTH);
+            mockKey.CleanNew(AesCrypto::MAX_KEYLENGTH);
             crypto.setKey(mockKey);
             actualKey = crypto.getKey();
+            
+            // Check
+            CHECK(actualKey.size() == AesCrypto::MAX_KEYLENGTH);
 
             // Act: Resize key to 24 bytes and set
             mockKey.CleanNew(mockKey.size() - 8);
