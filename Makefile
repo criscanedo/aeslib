@@ -53,12 +53,11 @@ tclean:
 	@echo Cleaning test object files...
 	rm -rf $(tobjdir)//*.o
 
-updateLibrary:
+update:
 	@echo Moving libaescrypto.a to c++ search path...
 	cp -f lib/libaescrypto.a /usr/lib/
-	@echo \nDone.
-
-updateHeaders:
+	@echo Done.
+	@echo
 	@echo Moving header files to c++ search path...
 	cp -f include/*.h /usr/include/
-	@echo \nDone.
+	@echo Done.
