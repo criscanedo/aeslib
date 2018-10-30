@@ -86,7 +86,7 @@ Currently there are two member functions to help with conversion from string to 
     std::string blockToString(SecByteBlock byteBlock) const;
     SecByteBlock toByteBlock(std::string str) const;
 
-## Usage
+### Usage
 
     #include <string>
     #include "aescrypto.h"
