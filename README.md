@@ -1,10 +1,10 @@
 # AesEncryption
 Personal library to perform AES CBC encryption/decryption with prepended IV. Acts as a wrapper around [Crypto++](https://www.cryptopp.com/) library.
 
-[AES](https://gitlab.com/hackerexecute/aescrypto#advanced-encryption-standard)
-[AesCrypto Implementation](https://gitlab.com/hackerexecute/aescrypto#aescrypto-implementation)
-[Usage](https://gitlab.com/hackerexecute/aescrypto#usage)
-[Install](https://gitlab.com/hackerexecute/aescrypto#install)
+* [AES](https://gitlab.com/hackerexecute/aescrypto#advanced-encryption-standard)
+* [AesCrypto Implementation](https://gitlab.com/hackerexecute/aescrypto#aescrypto-implementation)
+* [Usage](https://gitlab.com/hackerexecute/aescrypto#usage)
+* [Install](https://gitlab.com/hackerexecute/aescrypto#install)
 
 ## Advanced Encryption Standard
 
