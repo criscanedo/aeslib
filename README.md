@@ -1,5 +1,5 @@
 # AesEncryption
-Personal encryption library to perform AES CBC encryption/decryption with prepended IV. Acts as a wrapper around [Crypto++](https://www.cryptopp.com/) library.
+Personal library to perform AES CBC encryption/decryption with prepended IV. Acts as a wrapper around [Crypto++](https://www.cryptopp.com/) library.
 
 ## Advanced Encryption Standard
 
@@ -16,7 +16,7 @@ Personal encryption library to perform AES CBC encryption/decryption with prepen
 
 CBC uses an [initialization vector (IV)](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Initialization_vector_(IV)) that is the size of AES's block size (128-bit). The IV is used to ensure unique ciphertext with every encryption. Without it, two plaintext messages would produce the same ciphertext output. It is highly recommend that a IV be generated randomly for each encryption, and to never use the same IV more than once under the same key.
 
-The algorithm itself XORs each block of plaintext with the previous block of ciphertext before being encrypted. The IV is used with the plaintext for the first block of plaintext.
+The algorithm itself XORs each block of plaintext with the previous block of ciphertext before being encrypted. The IV is used with the the first block of plaintext.
 
 ## Padding
 
@@ -24,7 +24,7 @@ Some libraries generally require specifying a [padding algorithm](https://en.wik
 
 This is where Crypto++ differs in its implementation. While padding is still required, Crypto++ features a high level abstraction that handles buffering input, buffering output, and padding for you. The paradigm is called [pipelining](https://www.cryptopp.com/wiki/Pipelining) and was modeled from the Unix pipe system.
 
-While it's not necessary to know the details of Crypto++ to effectively use this library, it's never a bad investment to add to your arsenal of tools. It may lead you to write a better implementation for yourself.
+While it's not necessary to know the details of Crypto++ to effectively use this library, it's never a bad investment to add to your arsenal of tools. It may lead you to write a better library for yourself.
 
 ## AesCrypto Implementation
 
